@@ -4,6 +4,9 @@ import torchvision
 import numpy as np
 from collections import defaultdict
 
+# Device configuration
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 class CustomDataset(torch.utils.data.Dataset):
     def __init__(self):
@@ -55,15 +58,26 @@ class CustomDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         # Return a data pair(eg. image and label)
-        one_hot_encoded_output = [0 for x in range(self.output_size)]
-        one_hot_encoded_output[int(self.database[index][-1])] = 1
-        one_hot_encoded_output = np.asarray(one_hot_encoded_output)
-        # return self.database[index][0:-1], int(self.database[index][-1])
-        return self.database[index][0:-1], one_hot_encoded_output
+        return self.database[index][0:-1], int(self.database[index][-1])
 
     def __len__(self):
         # total size of the dataset
         return self.database.shape[0]
+
+
+# Fully connected Neural Network with one hidden layer
+class NeuralNet(nn.Module):
+    def __init__(self, input_size, hidden_size, num_classes):
+        super(NeuralNet, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, num_classes)
+
+    def forward(self, x):
+        out = self.fc1(x)
+        out = self.relu(out)
+        out = self.fc2(out)
+        return out
 
 
 if __name__ == '__main__':
@@ -76,17 +90,21 @@ if __name__ == '__main__':
     data_iter = iter(train_loader)
 
     # Defining model
-    model = nn.Linear(custom_dataset.input_size, custom_dataset.output_size)
+    model = NeuralNet(custom_dataset.input_size, 10,
+                      custom_dataset.output_size)
 
-    criterion = nn.MSELoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
-    for i in range(50000):
+    # Loss and optimizer
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+
+    for i in range(5000):
         for images, labels in train_loader:
-            images = images.float()
-            labels = labels.float()
+            images = images.float().to(device)
+            labels = labels.float().to(device)
             # Forward Pass
-            outputs = model(images)
-            loss = criterion(outputs, labels)
+            outputs = model(images.float())
+            # outputs = outputs.float()
+            loss = criterion(outputs, labels.long())
 
             # Backward and optimize
             optimizer.zero_grad()
@@ -101,10 +119,11 @@ if __name__ == '__main__':
         total = 0
         for images, labels in test_loader:
             images = images.float()
-            labels = labels.float()
-            _, labels = torch.max(labels.data, 1)
+            labels = labels.long()
+            # _, labels = torch.max(labels.data, 1)
             outputs = model(images)
             _, predicted = torch.max(outputs.data, 1)
+            # print(predicted, labels)
             total += images.size(0)
             correct += (predicted == labels).sum()
             print("Accuracy -> {}/{}: {:.4f}".format(

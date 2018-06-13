@@ -7,7 +7,7 @@ import torchvision.transforms as transforms
 input_size = 784
 output_size = 10
 batch_size = 100
-num_epochs = 5
+num_epochs = 2
 learning_rate = 0.01
 
 # Loading Dataset
@@ -44,6 +44,7 @@ for epoch in range(num_epochs):
 
         # Forward pass
         outputs = model(images)
+        print(outputs.size(), labels.size())
         loss = criterion(outputs, labels)
 
         # Backward and optimize
