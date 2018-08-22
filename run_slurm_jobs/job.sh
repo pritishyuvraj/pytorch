@@ -23,7 +23,7 @@ cd ..
 
 # Training (Default - on SQuAD)
 # python -m allennlp.run train training_config/bidaf10.json -s output_path_pritish_2
-python -m run_slurm_jobs.linear_regression
+python -m tutorials.linear_regression
 
 
 # Evaluation (Default - on SQuAD)
