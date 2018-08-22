@@ -1,0 +1,13 @@
+ModuleCmd_Load.c(213):ERROR:105: Unable to locate a modulefile for 'cuda80/blas/8.0.44'
+ModuleCmd_Load.c(213):ERROR:105: Unable to locate a modulefile for 'cuda80/fft/8.0.44'
+ModuleCmd_Load.c(213):ERROR:105: Unable to locate a modulefile for 'cuda80/nsight/8.0.44'
+ModuleCmd_Load.c(213):ERROR:105: Unable to locate a modulefile for 'cuda80/profiler/8.0.44'
+ModuleCmd_Load.c(213):ERROR:105: Unable to locate a modulefile for 'cuda80/toolkit/8.0.44'
+Traceback (most recent call last):
+  File "/usr/lib64/python2.7/runpy.py", line 162, in _run_module_as_main
+    "__main__", fname, loader, pkg_name)
+  File "/usr/lib64/python2.7/runpy.py", line 72, in _run_code
+    exec code in run_globals
+  File "/home/pyuvraj/CCPP/pytorch/tutorials/linear_regression.py", line 1, in <module>
+    import torch
+ImportError: No module named torch
